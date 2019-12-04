@@ -1,16 +1,14 @@
 param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $serialno,
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     $target
 )
-$apsthome = $env:APSTHOME
-<#
-if ((Test-Path $apsthome) -And (Test-Path (Join-Path $apsthome -ChildPath "config.ini")) ) {
+
+if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPath "config.ini")) ) {
     Write-Host "Already installed."
     exit 0
 }
-#>
 
 #Requires -RunAsAdministrator
 
@@ -195,3 +193,30 @@ if (Test-Path $file) {
     }
 }
 
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($x)
+$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "AviaUI.exe")"""
+$Shortcut.IconLocation = Join-Path $target -ChildPath "icon2.ico"
+$Shortcut.WorkingDirectory = """$($target)"""
+$Shortcut.Save()
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
+$Shortcut = $WshShell.CreateShortcut($x)
+$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "FDAcorn.exe")"""
+$Shortcut.Arguments = "-StartDownLoad"
+$Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
+$Shortcut.WorkingDirectory = """$($target)"""
+$Shortcut.Save()
+
+[System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
+
+Write-Host "Start to download? Y/n?"
+$x = [System.Console]::ReadKey()
+if (($x.KeyChar -eq 'n') -or ($x.KeyChar -eq 'N') ) {
+    Write-Host "Restart the computer to start the downloading."
+}
+else {
+    $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
+    Invoke-Item $x 
+}
+exit 0
