@@ -1,3 +1,9 @@
+param(
+    [Parameter(Mandatory=$false)]
+    $serialno,
+    [Parameter(Mandatory=$false)]
+    $target
+)
 $apsthome = $env:APSTHOME
 <#
 if ((Test-Path $apsthome) -And (Test-Path (Join-Path $apsthome -ChildPath "config.ini")) ) {
@@ -84,63 +90,86 @@ function Download-File {
 
 function Get-FtpDir ($url) {
     $request = [System.Net.FtpWebRequest]::Create($url)
-    $request.Credentials=New-Object System.Net.NetworkCredential("fd_clean","fd_clean340!")
+    $request.Credentials = New-Object System.Net.NetworkCredential("fd_clean", "fd_clean340!")
     $request.Method = [System.Net.WebRequestMethods+FTP]::ListDirectory
     $request.UseBinary = $true
-#    $passcode=ConvertTo-SecureString "fd_clean340!" -AsPlainText -Force
-#    $user=New-Object System.Net.NetworkCredential("fd_clean", $passcode) 
-#    if ($credentials) { $request.Credentials = $user }
+    #    $passcode=ConvertTo-SecureString "fd_clean340!" -AsPlainText -Force
+    #    $user=New-Object System.Net.NetworkCredential("fd_clean", $passcode) 
+    #    if ($credentials) { $request.Credentials = $user }
     $response = $request.GetResponse()
     $reader = New-Object IO.StreamReader $response.GetResponseStream() 
-	$ret=$reader.ReadToEnd()
-	$reader.Close()
+    $ret = $reader.ReadToEnd()
+    $reader.Close()
     $response.Close()
     return $ret
 }
 
 
 function FtpDownloadFile ($url, $file) {
-    $request = [System.Net.FtpWebRequest]::Create($url)
-    $request.Credentials=New-Object System.Net.NetworkCredential("fd_clean","fd_clean340!")
-    $request.Method = [System.Net.WebRequestMethods+FTP]::DownloadFile
-    $request.UseBinary = $true
-#    $passcode=ConvertTo-SecureString "fd_clean340!" -AsPlainText -Force
-#    $user=New-Object System.Net.NetworkCredential("fd_clean", $passcode) 
-#    if ($credentials) { $request.Credentials = $user }
-    $response = $request.GetResponse()
-    $reader = $response.GetResponseStream()
-    $LocalFile = New-Object IO.FileStream ($file,[IO.FileMode]::Create)
-    [byte[]]$ReadBuffer = New-Object byte[] 10240
-    do {
-        $ReadLength = $reader.Read($ReadBuffer,0,10240)
-        $LocalFile.Write($ReadBuffer,0,$ReadLength)
+    $ret = $false
+    try {
+        $request = [System.Net.FtpWebRequest]::Create($url)
+        $request.Credentials = New-Object System.Net.NetworkCredential("fd_clean", "fd_clean340!")
+        $request.Method = [System.Net.WebRequestMethods+FTP]::DownloadFile
+        $request.UseBinary = $true
+        #    $passcode=ConvertTo-SecureString "fd_clean340!" -AsPlainText -Force
+        #    $user=New-Object System.Net.NetworkCredential("fd_clean", $passcode) 
+        #    if ($credentials) { $request.Credentials = $user }
+        $response = $request.GetResponse()
+        $reader = $response.GetResponseStream()
+        $LocalFile = New-Object IO.FileStream ($file, [IO.FileMode]::Create)
+        [byte[]]$ReadBuffer = New-Object byte[] 10240
+        do {
+            $ReadLength = $reader.Read($ReadBuffer, 0, 10240)
+            $LocalFile.Write($ReadBuffer, 0, $ReadLength)
+        }
+        while ($ReadLength -ne 0)
+        $LocalFile.Close()
+        $reader.Close()
+        $response.Close()
+        $ret = $true
     }
-    while ($ReadLength -ne 0)
-    $LocalFile.Close()
-	$reader.Close()
-	$response.Close()
+    catch {
+        Write-Host $_.Exception.Message
+    }
+    return $ret
 }
 
-# ask for folder:
-$serialno=Read-Host "Enter CMC serial number"
-if([System.String]::IsNullOrEmpty($serialno)){
-    Write-Host "Missing serial number. Exit."
-    exit 1
+if ([System.String]::IsNullOrEmpty($serialno)) {
+    $serialno = Read-Host "Enter CMC serial number"
+    if ([System.String]::IsNullOrEmpty($serialno)) {
+        Write-Host "Missing serial number. Exit."
+        exit 1
+    }
 }
-$target=Read-Host "Enter the target folder: by default is (D:\projects\temp)"
-if([System.String]::IsNullOrEmpty($target)){
-    $target = "D:\projects\temp"
+if ([System.String]::IsNullOrEmpty($target)) {
+    $target = Read-Host "Enter the target folder: by default is (D:\projects\temp)"
+    if ([System.String]::IsNullOrEmpty($target)) {
+        $target = "D:\projects\temp"
+    }
 }
+mkdir $target
+
+
 # $url="https://raw.githubusercontent.com/chencen2000/powershellscript/master/test.ps1"
 # $x=Download-String $url
 # iex $x
 # $unzip=Join-Path $target -ChildPath "7za.exe"
 # Download-File 'https://chocolatey.org/7za.exe' $unzip
 
-$x=Get-FtpDir "ftp://ftp8.futuredial.com/SmartGrading"
-Write-Host $x
+$x = Get-FtpDir "ftp://ftp8.futuredial.com/SmartGrading"
+# Write-Host $x
+$file = Join-Path $target "cmc.zip"
+$x = "ftp://ftp8.futuredial.com/SmartGrading/{0}/cmc.zip" -f $serialno
+$ok = FtpDownloadFile $x $file
+if (! $ok) {
+    FtpDownloadFile "ftp://ftp8.futuredial.com/SmartGrading/cmc.zip" $file
+}
+if (-not (Test-Path $file)) {
+    Write-Host "Fail to download CMC from server."
+    exit 2
+}
 
-$file = "D:\projects\repos\AviaUI\Setup\cmc\cmc.zip"
 try {
     $shellApplication = new-object -com shell.application
     $zipPackage = $shellApplication.NameSpace($file)
@@ -150,3 +179,19 @@ try {
 catch {
     throw "Unable to unzip package using built-in compression. Set `$env:chocolateyUseWindowsCompression = 'false' and call install again to use 7zip to unzip. Error: `n $_"
 }
+
+Remove-Item -Path $file -Force
+$x = @{_id = $serialno } 
+$x = $x | ConvertTo-Json -Compress
+$ok = Invoke-WebRequest -UseBasicParsing -Uri "https://ps.futuredial.com/profiles/clients/_find?criteria=$x"
+Write-Host $ok.Content
+
+$file = Join-Path $target "fdcheckserial.exe"
+if (Test-Path $file) {
+    $x = Start-Process -WorkingDirectory $target -FilePath $file -ArgumentList @("-s", $serialno, "-d", $target) -Wait -PassThru
+    Write-Host "error code: $($x.ExitCode)"
+    if (!($x.ExitCode -eq 0)) {
+        Write-Host "Fail to download config. error code: $($x.ExitCode)"
+    }
+}
+
