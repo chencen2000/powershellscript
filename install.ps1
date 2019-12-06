@@ -209,8 +209,10 @@ $Shortcut.WorkingDirectory = """$($target)"""
 $Shortcut.Save()
 
 $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData())) "FutureDial"
+mkdir $x
 [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
 Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
 Write-Host "Restart the computer to start the download."
+cmd /c pause
 Restart-Computer
 exit 0
