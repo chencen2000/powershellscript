@@ -12,6 +12,12 @@ if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPat
 
 #Requires -RunAsAdministrator
 
+$x = Get-PSDrive -Name "D"
+if($null -eq $x){
+    Write-Host "There is no D drive on system."
+    exit 1
+}
+
 function Get-Downloader {
     param (
         [string]$url
@@ -141,10 +147,11 @@ if ([System.String]::IsNullOrEmpty($serialno)) {
     }
 }
 if ([System.String]::IsNullOrEmpty($target)) {
-    $target = Read-Host "Enter the target folder: by default is (D:\projects\temp)"
-    if ([System.String]::IsNullOrEmpty($target)) {
-        $target = "D:\projects\temp"
-    }
+    # $target = Read-Host "Enter the target folder: by default is (D:\projects\temp)"
+    # if ([System.String]::IsNullOrEmpty($target)) {
+    #     $target = "D:\projects\temp"
+    # }
+    $target = "D:\BZVisualInspect"
 }
 mkdir $target
 
