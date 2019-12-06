@@ -208,7 +208,7 @@ $Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
 $Shortcut.WorkingDirectory = """$($target)"""
 $Shortcut.Save()
 
-$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData())) "FutureDial"
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
 mkdir $x
 [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
 Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
