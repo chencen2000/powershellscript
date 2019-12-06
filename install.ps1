@@ -209,14 +209,7 @@ $Shortcut.WorkingDirectory = """$($target)"""
 $Shortcut.Save()
 
 [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
-
-Write-Host "Start to download? Y/n?"
-$x = [System.Console]::ReadKey()
-if (($x.KeyChar -eq 'n') -or ($x.KeyChar -eq 'N') ) {
-    Write-Host "Restart the computer to start the downloading."
-}
-else {
-    $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
-    Invoke-Item $x 
-}
+Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
+Write-Host "Restart the computer to start the download."
+Restart-Computer
 exit 0
