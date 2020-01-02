@@ -5,17 +5,26 @@ param(
     $target
 )
 
-if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPath "config.ini")) ) {
-    Write-Host "Already installed."
-    exit 0
+$x=[System.Version]::new("5.1")
+if ($PSVersionTable.PSVersion -gt $x){
+    # ps version is good
+}
+else {
+    Write-Host "Current Powewrshell version is $($psversiontable.PSVersion). Need V5.1"
+    exit 101
 }
 
-#Requires -RunAsAdministrator
+if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPath "config.ini")) ) {
+    Write-Host "Already installed."
+    exit 100
+}
+
+# Requires -RunAsAdministrator
 
 $x = Get-PSDrive -Name "D"
 if($null -eq $x){
     Write-Host "There is no D drive on system."
-    exit 1
+    exit 102
 }
 
 function Get-Downloader {
@@ -143,7 +152,7 @@ if ([System.String]::IsNullOrEmpty($serialno)) {
     $serialno = Read-Host "Enter CMC serial number"
     if ([System.String]::IsNullOrEmpty($serialno)) {
         Write-Host "Missing serial number. Exit."
-        exit 1
+        exit 104
     }
 }
 if ([System.String]::IsNullOrEmpty($target)) {
@@ -151,7 +160,8 @@ if ([System.String]::IsNullOrEmpty($target)) {
     # if ([System.String]::IsNullOrEmpty($target)) {
     #     $target = "D:\projects\temp"
     # }
-    $target = "D:\BZVisualInspect"
+    #$target = "D:\BZVisualInspect"
+    $target = "D:\test"
 }
 mkdir $target
 
@@ -185,41 +195,56 @@ catch {
     throw "Unable to unzip package using built-in compression. Set `$env:chocolateyUseWindowsCompression = 'false' and call install again to use 7zip to unzip. Error: `n $_"
 }
 
-Remove-Item -Path $file -Force
-$x = @{_id = $serialno } 
-$x = $x | ConvertTo-Json -Compress
-$ok = Invoke-WebRequest -UseBasicParsing -Uri "https://ps.futuredial.com/profiles/clients/_find?criteria=$x"
-Write-Host $ok.Content
-
-$file = Join-Path $target "fdcheckserial.exe"
-if (Test-Path $file) {
-    $x = Start-Process -WorkingDirectory $target -FilePath $file -ArgumentList @("-s", $serialno, "-d", $target) -Wait -PassThru
-    Write-Host "error code: $($x.ExitCode)"
-    if (!($x.ExitCode -eq 0)) {
-        Write-Host "Fail to download config. error code: $($x.ExitCode)"
-    }
+Import-Module PsIni
+$q=@{
+    serverTime="2013-08-13T18:16:26.706Z";
+    companyid="1";
+    webserviceserver="http://cmcqa.futuredial.com/ws/";
+    staticfileserver="http://cmcqa-dl.futuredial.com/";
+    installitunes="true";
+    _id="ed2e7151-441d-4f42-9916-7794a55abb0e";
+    adminconsoleserver="http://cmcqa.futuredial.com";
+    pname="SMART Grade";
+    siteid="1";
+    solutionid=45;
+    productid=55
 }
+Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini")
+# Remove-Item -Path $file -Force
+# $x = @{_id = $serialno } 
+# $x = $x | ConvertTo-Json -Compress
+# $ok = Invoke-WebRequest -UseBasicParsing -Uri "https://ps.futuredial.com/profiles/clients/_find?criteria=$x"
+# Write-Host $ok.Content
 
-$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
-$WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut($x)
-$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "AviaUI.exe")"""
-$Shortcut.IconLocation = Join-Path $target -ChildPath "icon2.ico"
-$Shortcut.WorkingDirectory = """$($target)"""
-$Shortcut.Save()
-$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
-$Shortcut = $WshShell.CreateShortcut($x)
-$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "FDAcorn.exe")"""
-$Shortcut.Arguments = "-StartDownLoad"
-$Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
-$Shortcut.WorkingDirectory = """$($target)"""
-$Shortcut.Save()
+# $file = Join-Path $target "fdcheckserial.exe"
+# if (Test-Path $file) {
+#     $x = Start-Process -WorkingDirectory $target -FilePath $file -ArgumentList @("-s", $serialno, "-d", $target) -Wait -PassThru
+#     Write-Host "error code: $($x.ExitCode)"
+#     if (!($x.ExitCode -eq 0)) {
+#         Write-Host "Fail to download config. error code: $($x.ExitCode)"
+#     }
+# }
 
-$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
-mkdir $x
-[System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
-Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
-Write-Host "Restart the computer to start the download."
-cmd /c pause
-Restart-Computer
-exit 0
+# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
+# $WshShell = New-Object -comObject WScript.Shell
+# $Shortcut = $WshShell.CreateShortcut($x)
+# $Shortcut.TargetPath = """$(Join-Path $target -ChildPath "AviaUI.exe")"""
+# $Shortcut.IconLocation = Join-Path $target -ChildPath "icon2.ico"
+# $Shortcut.WorkingDirectory = """$($target)"""
+# $Shortcut.Save()
+# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
+# $Shortcut = $WshShell.CreateShortcut($x)
+# $Shortcut.TargetPath = """$(Join-Path $target -ChildPath "FDAcorn.exe")"""
+# $Shortcut.Arguments = "-StartDownLoad"
+# $Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
+# $Shortcut.WorkingDirectory = """$($target)"""
+# $Shortcut.Save()
+
+# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
+# mkdir $x
+# [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
+# Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
+# Write-Host "Restart the computer to start the download."
+# cmd /c pause
+# Restart-Computer
+# exit 0
