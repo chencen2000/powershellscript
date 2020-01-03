@@ -19,7 +19,7 @@ if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPat
     exit 100
 }
 
-# Requires -RunAsAdministrator
+#Requires -RunAsAdministrator
 
 $x = Get-PSDrive -Name "D"
 if($null -eq $x){
@@ -224,26 +224,26 @@ Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini")
 #     }
 # }
 
-# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
-# $WshShell = New-Object -comObject WScript.Shell
-# $Shortcut = $WshShell.CreateShortcut($x)
-# $Shortcut.TargetPath = """$(Join-Path $target -ChildPath "AviaUI.exe")"""
-# $Shortcut.IconLocation = Join-Path $target -ChildPath "icon2.ico"
-# $Shortcut.WorkingDirectory = """$($target)"""
-# $Shortcut.Save()
-# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
-# $Shortcut = $WshShell.CreateShortcut($x)
-# $Shortcut.TargetPath = """$(Join-Path $target -ChildPath "FDAcorn.exe")"""
-# $Shortcut.Arguments = "-StartDownLoad"
-# $Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
-# $Shortcut.WorkingDirectory = """$($target)"""
-# $Shortcut.Save()
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($x)
+$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "AviaUI.exe")"""
+$Shortcut.IconLocation = Join-Path $target -ChildPath "icon2.ico"
+$Shortcut.WorkingDirectory = """$($target)"""
+$Shortcut.Save()
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonStartup)) "SMARTGradePreparation.lnk"
+$Shortcut = $WshShell.CreateShortcut($x)
+$Shortcut.TargetPath = """$(Join-Path $target -ChildPath "FDAcorn.exe")"""
+$Shortcut.Arguments = "-StartDownLoad"
+$Shortcut.IconLocation = Join-Path $target -ChildPath "icon1.ico"
+$Shortcut.WorkingDirectory = """$($target)"""
+$Shortcut.Save()
 
-# $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
-# mkdir $x
-# [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
-# Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
-# Write-Host "Restart the computer to start the download."
-# cmd /c pause
-# Restart-Computer
-# exit 0
+$x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
+mkdir $x
+[System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
+Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
+Write-Host "Restart the computer to start the download."
+cmd /c pause
+Restart-Computer
+exit 0
