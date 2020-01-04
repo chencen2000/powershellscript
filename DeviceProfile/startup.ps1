@@ -15,15 +15,18 @@ if($null -eq $y){
     Write-Host "Fail to load Polaris Module."
     exit 1
 }
-New-PolarisGetRoute -path "/" -Scriptblock{
-    $Response.Send('Device Manager Running!');
+
+$sb= {
+    Write-Host $Request.Query
+    $Response.Send('Device Manager Running!')
 }
+New-PolarisGetRoute -path "/" -Scriptblock $sb
 
 New-PolarisGetRoute -path "/deviceprofilelist" -ScriptPath .\Scripts\handle_deviceprofilelist.ps1
 
 $own=$false
 $quit=[System.Threading.EventWaitHandle]::new($false, [System.Threading.EventResetMode]::AutoReset, "DeviceManagerServer", [ref]$own)
-$app = Start-Polaris -Port $port
+$app = Start-Polaris -Port $port -Debug
 # $quit.WaitOne()
 while($app.Listener.IsListening){
     # Wait-Event callbackcomplete

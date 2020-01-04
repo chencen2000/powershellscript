@@ -24,6 +24,6 @@ function get_alldocuments($collName){
 }
 # $x=@{key="value";key2="values"}
 # $Response.Json(($x|ConvertTo-Json))
-
+Write-Host $Request.Query
 $all_data=get_alldocuments "SG_GeneralDPInfo"
 $Response.Json(($all_data|ConvertTo-Json))
