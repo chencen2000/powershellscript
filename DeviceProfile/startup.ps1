@@ -18,6 +18,7 @@ if($null -eq $y){
 
 $sb= {
     Write-Host $Request.Query
+    Write-Host Get-PSCallStack
     $Response.Send('Device Manager Running!')
 }
 New-PolarisGetRoute -path "/" -Scriptblock $sb
