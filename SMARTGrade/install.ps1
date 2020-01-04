@@ -5,6 +5,8 @@ param(
     $target
 )
 
+Write-Host $PSScriptRoot
+
 $x=[System.Version]::new("5.1")
 if ($PSVersionTable.PSVersion -gt $x){
     # ps version is good
@@ -160,7 +162,8 @@ if ([System.String]::IsNullOrEmpty($target)) {
     # if ([System.String]::IsNullOrEmpty($target)) {
     #     $target = "D:\projects\temp"
     # }
-    $target = "D:\BZVisualInspect"
+    #$target = "D:\BZVisualInspect"
+    $target = "D:\projects\temp"
 }
 mkdir $target
 
@@ -194,7 +197,12 @@ catch {
     throw "Unable to unzip package using built-in compression. Set `$env:chocolateyUseWindowsCompression = 'false' and call install again to use 7zip to unzip. Error: `n $_"
 }
 
-Import-Module PsIni
+# Import-Module PsIni
+$x=Import-Module ([System.IO.Path]::combine($target, "Modules", "PsIni")) -PassThru
+if($null -eq $x){
+    Write-Host "Fail to load INI module."
+    exit 105
+}
 $q=@{
     serverTime="2013-08-13T18:16:26.706Z";
     companyid="1";
@@ -242,8 +250,8 @@ $Shortcut.Save()
 $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
 mkdir $x
 [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
-Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
-Write-Host "Restart the computer to start the download."
-cmd /c pause
-Restart-Computer
+# Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
+# Write-Host "Restart the computer to start the download."
+# cmd /c pause
+# Restart-Computer
 exit 0

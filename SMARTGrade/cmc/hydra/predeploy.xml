@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<predeploy>
+	<runExe>
+		<item cmd="%apsthome%\BindiTunes.exe" param="-uninstall" wait="true" display="Stopping Service..."/>
+		<item cmd="%apsthome%\FDAppleServiceConsole.exe" param="-stopService -serviceName=&quot;Apple Mobile Device&quot;" wait="true" runfolder="FutureDial" display="Stopping Service..."/>
+		<item cmd="%apsthome%\FDKillProcess.exe" param="-exe=fdEnvCheckAcorn" wait="true"/>
+	</runExe>
+</predeploy>
