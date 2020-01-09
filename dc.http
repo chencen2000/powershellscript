@@ -41,10 +41,593 @@ Content-Type: application/json
 
 
 ###
-GET http://dc.futuredial.com/cmc/Test_456/?pagesize=0&count
+GET http://dc.futuredial.com/cmc/SG_Machines/
+    ?filter={"uuid":"SMARTGrade_Test01"}
 Authorization: Basic cmc cmc1234!
 
 ### 
-DELETE http://dc.futuredial.com/cmc/CCTest
+DELETE http://dc.futuredial.com/cmc/SG_Machines
 Authorization: Basic admin fd123!
 If-Match: 5e01b1cbb64757425d5ea8a6
+
+### cmc first download
+POST http://cmcqa.futuredial.com/ws/update/
+Content-Type: application/json
+
+{
+  "client": {
+    "company": 9,
+    "solutionid": 7,
+    "productid": 9
+  },
+  "sync": {
+    "status": {
+      "framework": {
+        "version": "",
+        "filelist": []
+      },
+      "phonedll": {
+        "filelist": [],
+        "deletelist": []
+      },
+      "driver": {
+        "filelist": [],
+        "deletelist": []
+      },
+      "prl": {
+        "filelist": [],
+        "deletelist": []
+      },
+      "phonetips": {
+        "filelist": [],
+        "deletelist": []
+      },
+      "firmware": {
+        "filelist": [],
+        "deletelist": []
+      }
+    }
+  },
+  "protocol": "2.0"
+}
+
+### with client information
+POST http://cmcqa.futuredial.com/ws/update/
+Content-Type: application/json
+
+{
+  "client": {
+    "company": 9,
+    "solutionid": 7,
+    "productid": 9
+  },
+  "sync": {
+    "status": {
+      "framework": {
+        "version": "20.01.08.43029",
+        "filelist": []
+      },
+      "phonedll": {
+        "filelist": [
+          {
+            "readableid": "PST_APE_IPAD2_WIFI_GSM",
+            "checksum": "08E5CF1FD79C1EF90DA384F3284F8E26",
+            "size": 276920,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADAIR2TD-LTE_USB_GSM",
+            "checksum": "6540824D217A287D8363869F2818FBA0",
+            "size": 739211,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_ARD_FLASH-UNIVERSAL_USB_FD",
+            "checksum": "51C1EE7BB8A31716D7CF2126885424D7",
+            "size": 12562323,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI2GLOBAL_USB_GSM",
+            "checksum": "2D5F001D3DEF51A600CE56584183D05D",
+            "size": 290267,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH2_USB_GSM",
+            "checksum": "D8FA206EED5B1457CE92D3B38CFEBB09",
+            "size": 279204,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_UNIVERSAL_USB_FD",
+            "checksum": "33B81E7B2EC1BCDD8A3D1F1E0856517E",
+            "size": 78411975,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI4TD-LTE_GSM",
+            "checksum": "8DC495F49BFF1295E4B328C77F37541E",
+            "size": 739386,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_ARD_SAMADBLESSUNIVERSAL_USB_FD",
+            "checksum": "5F44569D359C9099252B0207D8D2D64A",
+            "size": 7522566,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPRO10.5TD-LTE_USB_GSM",
+            "checksum": "23D063FA91E51FDE15D06C14D85CCBBE",
+            "size": 739453,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI3_USB_CDMA",
+            "checksum": "E3C931E3C2C76474FC61A1C2641C1FD4",
+            "size": 289380,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5C_USB_GSM",
+            "checksum": "1BABE1DCADF146C72778D8E5C00A4704",
+            "size": 279652,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD3_USB_CDMA",
+            "checksum": "36835434B69DF2CE71A4E426EE233E93",
+            "size": 277011,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5C_USB_CDMA",
+            "checksum": "E8C51AAE560777FB4DF358BD77EE23C6",
+            "size": 279652,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5S_USB_CDMA",
+            "checksum": "75F3324860576E08D2044D26DD37B0EA",
+            "size": 279657,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5S_USB_GSM",
+            "checksum": "1CDE22596E7C1193BEBE3B3221A94A7E",
+            "size": 279655,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONESE_USB_GSM",
+            "checksum": "73DA1307868BF26B0D9D94F08392ED9B",
+            "size": 739652,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD4GLOBAL_USB_GSM",
+            "checksum": "64D2F4A97D84AAA432800961798BCFE7",
+            "size": 289897,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD2_USB_GSM",
+            "checksum": "3D700822F6ED62420B3C0F55B3A0FE34",
+            "size": 277723,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINIGLOBAL_USB_GSM",
+            "checksum": "17D7CF66E16CA86BFC5C9FFA12F1BA0A",
+            "size": 290260,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_SAM_G530P_USB_SPR",
+            "checksum": "CCD4934BFC79CFDC123807D1C9C8EDC2",
+            "size": 2172988,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE6_USB_GSM",
+            "checksum": "927B08C75DD3FFE8F50973E0CCCD763A",
+            "size": 289356,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE7BPLUS_USB_GSM",
+            "checksum": "5900B2276BA13996488234EFF8CFECFB",
+            "size": 739529,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI4_WIFI_GSM",
+            "checksum": "CFD57DECB37004F78901E36144DE7939",
+            "size": 739369,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONEXB_USB_GSM",
+            "checksum": "5A06C3FF84FA9DBC3D40E852F8D9F19E",
+            "size": 739482,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD2_USB_CDMA",
+            "checksum": "B2F776BE034A59960C1FD05F35A79C25",
+            "size": 277466,
+            "disabled": false
+          },
+          {
+            "readableid": "WPH8ANDABOVEUNIVERSAL_USB_GSM",
+            "checksum": "04E94E2C2AC0826B3A9F9B95F9132E0B",
+            "size": 6276338,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE7A_USB_GSM",
+            "checksum": "AFB09E2918AB0632A2084AE6958995F3",
+            "size": 289384,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPRO9.7WIFI_USB_GSM",
+            "checksum": "D04D3DF26CAE9B1A230672F8EF95E165",
+            "size": 739399,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_ARD_UNIVERSAL_USB_FD",
+            "checksum": "462774981B2C0F895CEACC388E427998",
+            "size": 16545860,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE7B_USB_GSM",
+            "checksum": "7FA3C1D586036F4A32F8217ACB4E796E",
+            "size": 739477,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADAIR2TD-LTE_GSM",
+            "checksum": "9EF35E5F2DEB937B7DD0E82F909EA067",
+            "size": 289380,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE4S_USB_GSM",
+            "checksum": "7335E721D25377B5D0C6CE89AB9E02B0",
+            "size": 276597,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5_USB_CDMA",
+            "checksum": "91B952B3895BEABBF490914C79CEC1EA",
+            "size": 279674,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE8BPLUS_USB_GSM",
+            "checksum": "96902210A47A115F51A7F2361337CC57",
+            "size": 739535,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH4_USB_GSM",
+            "checksum": "017022A68DE5692E53BC346BDA80D900",
+            "size": 279207,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE4_USB_CDMA",
+            "checksum": "9D87564AC66BCFD664A165B9FD1A9141",
+            "size": 283791,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE8A_USB_GSM",
+            "checksum": "4F2353A82334F6CC5B38EA7B047656F2",
+            "size": 739483,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD1_USB_GSM",
+            "checksum": "D0B5BC2FC1DD962AD1F77FC519809802",
+            "size": 279170,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE4_USB_GSM",
+            "checksum": "A02084C89627986EA9F51C1D20579C14",
+            "size": 274373,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD3_WIFI_GSM",
+            "checksum": "519E51ABBE168306A5D813E45FFCF430",
+            "size": 274784,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD3_USB_GSM",
+            "checksum": "99AA4F8BA203D63B416A8BCD1A4819AB",
+            "size": 276818,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPRO2TD-LTE_USB_GSM",
+            "checksum": "AF1FD992E31B9C3EFDDF7A042B4FE288",
+            "size": 739415,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD2NEW_USB_GSM",
+            "checksum": "9FF35F8D8FA86732BFB2F3AF2EC22EB8",
+            "size": 276397,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE6PLUS_USB_GSM",
+            "checksum": "6388BFF0BB371D12F55872F08F14731D",
+            "size": 289366,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI4TD-LTE_USB_GSM",
+            "checksum": "288476A1018AEB2E3634EFBDEB066D54",
+            "size": 739414,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE6S_USB_GSM",
+            "checksum": "A48E0D5D281BEE2BACE86B3454190064",
+            "size": 739654,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPRO9.7TD-LTE_USB_GSM",
+            "checksum": "BC4458600BD7D1810CEC9CD877F39E50",
+            "size": 739428,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADAIR_WIFI_GSM",
+            "checksum": "0D6F84A0E9088B8616837A6C7E2F3EBE",
+            "size": 289358,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE3GS_USB_GSM",
+            "checksum": "D6BC1B5F02929956344D0A4C6EF4F70F",
+            "size": 274103,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_RIM_UNIVERSAL_USB_FD",
+            "checksum": "AE008684358CECA5EC1016BBB990F46B",
+            "size": 1280602,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH1_USB_GSM",
+            "checksum": "BF6E45E7D15A12CEEE82104904EDB7C8",
+            "size": 279197,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPROTD-LTE_USB_GSM",
+            "checksum": "83F6AC7FAAA7358456879E1482BC123C",
+            "size": 739386,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD5TD-LTE_USB_GSM",
+            "checksum": "A7E05484C71F392439AA494171D06896",
+            "size": 739591,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH6_USB_GSM",
+            "checksum": "95ED838BE507095B4E3F8CB68350FC42",
+            "size": 729100,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI3_WIFI_GSM",
+            "checksum": "696FFE4C63F79B304981E2039461B4F7",
+            "size": 289412,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH3_USB_GSM",
+            "checksum": "B8610B7628E4CFB5C574890D0A3DD14C",
+            "size": 279194,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI_WIFI_GSM",
+            "checksum": "5E22FA116E2628D65844C74CFA34397E",
+            "size": 289378,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONEXA_USB_GSM",
+            "checksum": "3E7F2EF8C2E7E41023B8A973C24CF525",
+            "size": 739480,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE_USB_GSM",
+            "checksum": "E490DFC5A5206E1CAB9B04A0CD8C8449",
+            "size": 330478,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI_USB_GSM",
+            "checksum": "24333F7D26CBBDDAA412FDC88802B3B5",
+            "size": 289855,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE5_USB_GSM",
+            "checksum": "DC64CCF03F7C9512D03D20C9A12DF21B",
+            "size": 279575,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADAIRGLOBAL_USB_GSM",
+            "checksum": "73C1F341DA1E57BC5933AD325BBCE2DD",
+            "size": 289912,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE8APLUS_USB_GSM",
+            "checksum": "DA9D584855E472378E45B48D8166D84C",
+            "size": 739535,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD5_WIFI_GSM",
+            "checksum": "C5EC075BC7D7050B6B20ADED8258FAD5",
+            "size": 739334,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADPRO_WIFI_GSM",
+            "checksum": "96E8B0EB2D1ECD7B26674A7EF6C97E4D",
+            "size": 739339,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE8B_USB_GSM",
+            "checksum": "F7CB5DAD46401E85B94E75FC6BC7FB8E",
+            "size": 739483,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADAIR2_WIFI_GSM",
+            "checksum": "EA106218B66F387B1358445872B9F462",
+            "size": 739356,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE7APLUS_USB_GSM",
+            "checksum": "56F6C790824FB5745BD16E41C8C49256",
+            "size": 289405,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD4_USB_GSM",
+            "checksum": "8A459D87235EEB91AB0F4BA885D10B7C",
+            "size": 289460,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_HTC_2PQ93_USB_SPR",
+            "checksum": "55D05A7FBF1E253951F47DB207A45ED3",
+            "size": 9269467,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPODTOUCH5_USB_GSM",
+            "checksum": "3F67E8A11B24377F0374803C984557FC",
+            "size": 279968,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE4NEW_USB_GSM",
+            "checksum": "24D9683AE2F16D8D7109165387213B58",
+            "size": 283636,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD6TD-LTE_USB_GSM",
+            "checksum": "A707F15EEB4EBA55199E3EF4B02406CB",
+            "size": 739398,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE3G_USB_GSM",
+            "checksum": "4B565CF67E570EC4BD1188FFB041CBC3",
+            "size": 277668,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPHONE6SPLUS_USB_GSM",
+            "checksum": "E841D59163CD211E6B1A01A133339258",
+            "size": 739706,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPADMINI2_WIFI_GSM",
+            "checksum": "9DAA3C6F1C1C3ECCF12085C25E9FADD5",
+            "size": 289386,
+            "disabled": false
+          },
+          {
+            "readableid": "PST_APE_IPAD4_WIFI_GSM",
+            "checksum": "259186F76A171A4ADCE3A48A6AA8908E",
+            "size": 289047,
+            "disabled": false
+          }
+        ],
+        "deletelist": []
+      },
+      "driver": {
+        "filelist": [
+          {
+            "readableid": "DRV_APPLE_PST",
+            "checksum": "2FBA67555244DEAF8273F722C69F7395",
+            "size": 8182142,
+            "disabled": false
+          },
+          {
+            "readableid": "DRV_RIM_USB_MODEM_PST",
+            "checksum": "F97A9A550C798A3EBC42332F76278A4A",
+            "size": 17979781,
+            "disabled": false
+          },
+          {
+            "readableid": "DRV_BONJOUR_PST",
+            "checksum": "C9160CE92FB7D448EA9753FCFF967B1B",
+            "size": 2210993,
+            "disabled": false
+          },
+          {
+            "readableid": "DRV_PALM_PST",
+            "checksum": "7B65CF50FF3CA50353C81F1BC661154B",
+            "size": 8911560,
+            "disabled": false
+          }
+        ],
+        "deletelist": []
+      },
+      "prl": {
+        "filelist": [
+          {
+            "readableid": "PST_FT_UNIVERSAL_USB_FD",
+            "checksum": "E1B8BBD95E9BD184FE89E2D1057328B0",
+            "size": 38831873
+          }
+        ],
+        "deletelist": []
+      },
+      "phonetips": {
+        "filelist": [
+          {
+            "readableid": "PHONETIP_DEPLOYNUMBER",
+            "checksum": "5F5B719E2F8AA7A1C1971931C81FADDA",
+            "size": 792
+          }
+        ],
+        "deletelist": []
+      },
+      "firmware": {
+        "filelist": [],
+        "deletelist": []
+      }
+    }
+  },
+  "protocol": "2.0"
+}
