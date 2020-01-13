@@ -5,7 +5,7 @@ if( -not (Test-Path $env:APSTHOME)){
 
 $logfn=Join-Path -Path $env:APSTHOME -ChildPath ("Deploy-{0}.log" -f (Get-Date).ToString("yyyyMMdd"))
 Start-Transcript -Path $logfn -Append
-function deploy-deviceprofile ($dppackage){
+function Restore-DeviceProfile ($dppackage){
     if(Test-Path $dppackage){
         $temp = Join-Path -Path $env:TEMP -ChildPath "dptemp"
         Remove-Item -Recurse -Force $temp
@@ -32,7 +32,7 @@ if( Test-Path $dpfolder){
     $dp_packages=Get-ChildItem -Path $dpfolder
     Write-Host "Device profile packages = $dp_packages"
     foreach($fn in $dp_packages){
-        deploy-deviceprofile $fn
+        Restore-DeviceProfile $fn
     }
 }
 
