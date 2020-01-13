@@ -1,0 +1,48 @@
+{
+    "client": {
+      "company": 1,
+      "solutionid": 45,
+      "productid": 55
+    },
+    "sync": {
+      "status": {
+        "framework": {
+          "version": "0.1.0.101",
+          "filelist": []
+        },
+        "phonedll": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "driver": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "prl": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "phonetips": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "deviceprofile": {
+          "filelist": [
+            {
+              "readableid": "APPLE-IPHONE6-GRAY-1.0",
+              "checksum": "0D425842CEAE1317DC0FFC7B9CF21D18",
+              "size": 9499816
+            },
+            {
+              "readableid": "APPLE-IPHONEX-MIDNIGHTGREEN-1.0.1",
+              "checksum": "AD4FE76A113093EF020DF1BBE1419875",
+              "size": 9499846
+            }
+          ],
+          "deletelist": []
+        }
+      }
+    },
+    "protocol": "2.0"
+  }
+  

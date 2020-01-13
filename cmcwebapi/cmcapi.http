@@ -1,0 +1,22 @@
+### ps.futuredial.com api
+GET https://ps.futuredial.com/profiles/clients/_find
+  ?criteria={"_id": "521eb3dd-47f0-40ef-9b54-30466dfe6cc7"}
+Content-Type: application/json
+
+
+### list packages 
+GET http://cmcqa.futuredial.com/api/listpkgs/
+    ?type=deviceprofile    
+    &solutionid=45
+
+### list firmware packages 
+GET http://cmcqa.futuredial.com/api/listpkgs/
+    ?type=firmware    
+    &solutionid=45
+
+
+### cmc first download
+POST http://cmcqa.futuredial.com/ws/update/
+Content-Type: application/json
+
+< ./clientsync.json

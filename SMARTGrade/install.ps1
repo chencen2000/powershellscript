@@ -5,9 +5,13 @@ param(
     $target
 )
 
+$logfn=Join-Path -Path D:\projects -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
+Start-Transcript -Path $logfn -Append
+
 Write-Host $PSScriptRoot
 
 $x=[System.Version]::new("5.1")
+Write-Host "Check powershell version $($psversiontable.psversion)"
 if ($PSVersionTable.PSVersion -gt $x){
     # ps version is good
 }
@@ -157,16 +161,18 @@ if ([System.String]::IsNullOrEmpty($serialno)) {
         exit 104
     }
 }
+Write-Host "Enter serial number: $serialno"
+
 if ([System.String]::IsNullOrEmpty($target)) {
     # $target = Read-Host "Enter the target folder: by default is (D:\projects\temp)"
     # if ([System.String]::IsNullOrEmpty($target)) {
     #     $target = "D:\projects\temp"
     # }
-    #$target = "D:\BZVisualInspect"
-    $target = "D:\projects\temp"
+    $target = "D:\BZVisualInspect"
+    #$target = "D:\projects\temp"
 }
 mkdir $target
-
+Write-Host "Target Dir: $target"
 
 # $url="https://raw.githubusercontent.com/chencen2000/powershellscript/master/test.ps1"
 # $x=Download-String $url
@@ -187,15 +193,20 @@ if (-not (Test-Path $file)) {
     exit 2
 }
 
-try {
-    $shellApplication = new-object -com shell.application
-    $zipPackage = $shellApplication.NameSpace($file)
-    $destinationFolder = $shellApplication.NameSpace($target)
-    $destinationFolder.CopyHere($zipPackage.Items(), 0x10)
+if( Test-Path $file){
+    Expand-Archive -Path $file -DestinationPath $target
 }
-catch {
-    throw "Unable to unzip package using built-in compression. Set `$env:chocolateyUseWindowsCompression = 'false' and call install again to use 7zip to unzip. Error: `n $_"
-}
+
+# try {
+#     $shellApplication = new-object -com shell.application
+#     $zipPackage = $shellApplication.NameSpace($file)
+#     $destinationFolder = $shellApplication.NameSpace($target)
+#     $destinationFolder.CopyHere($zipPackage.Items(), 0x10)
+# }
+# catch {
+#     throw "Unable to unzip package using built-in compression. Set `$env:chocolateyUseWindowsCompression = 'false' and call install again to use 7zip to unzip. Error: `n $_"
+# }
+
 
 # Import-Module PsIni
 $x=Import-Module ([System.IO.Path]::combine($target, "Modules", "PsIni")) -PassThru
@@ -209,7 +220,7 @@ $q=@{
     webserviceserver="http://cmcqa.futuredial.com/ws/";
     staticfileserver="http://cmcqa-dl.futuredial.com/";
     installitunes="true";
-    _id="ed2e7151-441d-4f42-9916-7794a55abb0e";
+    _id="521eb3dd-47f0-40ef-9b54-30466dfe6cc7";
     adminconsoleserver="http://cmcqa.futuredial.com";
     pname="SMART Grade";
     siteid="1";
@@ -254,4 +265,5 @@ mkdir $x
 # Write-Host "Restart the computer to start the download."
 # cmd /c pause
 # Restart-Computer
+Stop-Transcript
 exit 0

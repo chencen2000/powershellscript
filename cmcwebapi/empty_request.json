@@ -1,0 +1,41 @@
+{
+    "client": {
+      "company": 1,
+      "solutionid": 45,
+      "productid": 55
+    },
+    "sync": {
+      "status": {
+        "framework": {
+          "version": "",
+          "filelist": []
+        },
+        "phonedll": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "driver": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "prl": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "phonetips": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "firmware": {
+          "filelist": [],
+          "deletelist": []
+        },
+        "deviceprofile": {
+          "filelist": [],
+          "deletelist": []
+        }
+      }
+    },
+    "protocol": "2.0"
+  }
+  
