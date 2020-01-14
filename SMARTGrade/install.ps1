@@ -227,7 +227,7 @@ $q=@{
     solutionid=45;
     productid=55
 }
-Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini")
+Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
 # Remove-Item -Path $file -Force
 # $x = @{_id = $serialno } 
 # $x = $x | ConvertTo-Json -Compress
