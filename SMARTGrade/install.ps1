@@ -20,10 +20,10 @@ else {
     exit 101
 }
 
-if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPath "config.ini")) ) {
-    Write-Host "Already installed."
-    exit 100
-}
+# if ((Test-Path $env:APSTHOME) -And (Test-Path (Join-Path $env:APSTHOME -ChildPath "config.ini")) ) {
+#     Write-Host "Already installed."
+#     exit 100
+# }
 
 #Requires -RunAsAdministrator
 

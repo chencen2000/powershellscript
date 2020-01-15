@@ -13,5 +13,6 @@ $apsthome=$env:apsthome
 if (Test-Path $apsthome) {
     Remove-Item -Recurse -Force -Path $apsthome
 }
-
+$x=[System.IO.Path]::Combine($env:ProgramData, "FutureDial")
+Remove-Item -Recurse -Force -Path $x
 Stop-Transcript
