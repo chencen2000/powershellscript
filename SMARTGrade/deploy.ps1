@@ -27,10 +27,10 @@ if($null -eq $x){
 
 $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
 New-Item -Path $x -ItemType Directory 
-$x=Join-Path -Path $x -ChildPath "MissionManager.ini"
+$missionManagerIni=Join-Path -Path $x -ChildPath "MissionManager.ini"
 $dp_local=[ordered]@{}
-if(Test-Path $x){
-    $dp_local=Get-IniContent $x
+if(Test-Path $missionManagerIni){
+    $dp_local=Get-IniContent $missionManagerIni
 }
 Write-Host ($dp_local | Out-String)
 if( $dp_local.Contains("productNum")){
@@ -103,9 +103,14 @@ function Add-DeviceModel($productIndex, $info){
 }
 function Add-DeviceMaker($info){
     $num = $dp_local["ProductNum"]["Num"] -as [int]
-    $dp_local["Product$productIndex"]["ProductID"] = $num
-    $dp_local["Product$productIndex"]["ProductName"] = $info["Maker"]
-    $dp_local["Product$productIndex"]["TypeNum"]=0
+    $np=[ordered]@{}
+    $np["ProductID"] = $num
+    $np["ProductName"] = $info["Maker"]
+    $np["TypeNum"]=0
+    $dp_local.Add("Product$num", $np)
+    # $dp_local["Product$productIndex"]["ProductID"] = $num
+    # $dp_local["Product$productIndex"]["ProductName"] = $info["Maker"]
+    # $dp_local["Product$productIndex"]["TypeNum"]=0
     $dp_local["ProductNum"]["Num"]=$num+1
     return $num
 }
@@ -165,6 +170,7 @@ Write-Host "Script root = $PSScriptRoot"
 $downloadTemp=[System.IO.Path]::Combine($env:ProgramData, "FutureDial", "FDDownloadTools", "DownloadTemp")
 $dpfolder=Join-Path $downloadTemp -ChildPath "deviceprofile"
 Write-Host "Device profile download path = $dpfolder"
+# $dps=[ArrayList]@()
 
 if( Test-Path $dpfolder){
     $dp_packages=Get-ChildItem -Path $dpfolder
@@ -174,14 +180,23 @@ if( Test-Path $dpfolder){
             $id = Restore-DeviceProfile $fn
             $r = Find-SectionByReadableId $id
             if($null -ne $r){
-                $clientStatus.sync.deviceprofile.filelist.Add($r)
+                $clientStatus.sync.status.deviceprofile.filelist += $r
+                # $dps.Add($r)
             }
         }
         # Out-IniFile -FilePath 
-        Out-IniFile -FilePath D:\Projects\test.ini -InputObject $dp_local -Encoding ASCII
-        convertto-json $clientStatus | Out-File -FilePath (Join-Path -Path $env:APSTHOME -ChildPath "ClientStatus.json")
+        Remove-Item -Path $missionManagerIni -Force
+        Out-IniFile -FilePath $missionManagerIni -InputObject $dp_local -Encoding ASCII
+        # foreach($i in $clientStatus.sync.status.deviceprofile.filelist){
+        #     $dps.Add($i)
+        # }
+        # $clientStatus.sync.status.deviceprofile.filelist =  $dps
+        # $x = convertto-json $clientStatus -Depth 8 | Out-File -FilePath (Join-Path -Path $env:APSTHOME -ChildPath "ClientStatus.json") -Encoding utf8
+        $x = convertto-json $clientStatus -Depth 8
+        [System.IO.File]::WriteAllText((Join-Path -Path $env:APSTHOME -ChildPath "ClientStatus.json"), $x)
     }    
 }
 
+# start deploy
 
 Stop-Transcript

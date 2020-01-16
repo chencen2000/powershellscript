@@ -155,7 +155,10 @@ function FtpDownloadFile ($url, $file) {
 }
 
 if ([System.String]::IsNullOrEmpty($serialno)) {
-    $serialno = Read-Host "Enter CMC serial number"
+    $serialno = Read-Host "Enter CMC serial number: (default: 521eb3dd-47f0-40ef-9b54-30466dfe6cc7)"
+    if ([System.String]::IsNullOrEmpty($serialno)) {
+        $serialno="521eb3dd-47f0-40ef-9b54-30466dfe6cc7"
+    }
     if ([System.String]::IsNullOrEmpty($serialno)) {
         Write-Host "Missing serial number. Exit."
         exit 104
@@ -214,25 +217,34 @@ if($null -eq $x){
     Write-Host "Fail to load INI module."
     exit 105
 }
-$q=@{
-    serverTime="2013-08-13T18:16:26.706Z";
-    companyid="1";
-    webserviceserver="http://cmcqa.futuredial.com/ws/";
-    staticfileserver="http://cmcqa-dl.futuredial.com/";
-    installitunes="true";
-    _id="521eb3dd-47f0-40ef-9b54-30466dfe6cc7";
-    adminconsoleserver="http://cmcqa.futuredial.com";
-    pname="SMART Grade";
-    siteid="1";
-    solutionid=45;
-    productid=55
+# $q=@{
+#     serverTime="2013-08-13T18:16:26.706Z";
+#     companyid="1";
+#     webserviceserver="http://cmcqa.futuredial.com/ws/";
+#     staticfileserver="http://cmcqa-dl.futuredial.com/";
+#     installitunes="true";
+#     _id="521eb3dd-47f0-40ef-9b54-30466dfe6cc7";
+#     adminconsoleserver="http://cmcqa.futuredial.com";
+#     pname="SMART Grade";
+#     siteid="1";
+#     solutionid=45;
+#     productid=55
+# }
+# Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
+Remove-Item -Path $file -Force
+$x = @{_id = $serialno } 
+$x = $x | ConvertTo-Json -Compress
+$q = @{criteria=$x}
+$ok = Invoke-RestMethod -UseBasicParsing -Uri "https://ps.futuredial.com/profiles/clients/_find" -Body $q
+Write-Host $ok.Content
+if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
+    $q=@{}
+    $ok.results[0] | Get-Member -MemberType *Property | % {
+        $q.($_.name) = $ok.results[0].($_.name); 
+    } 
+    Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
 }
-Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
-# Remove-Item -Path $file -Force
-# $x = @{_id = $serialno } 
-# $x = $x | ConvertTo-Json -Compress
-# $ok = Invoke-WebRequest -UseBasicParsing -Uri "https://ps.futuredial.com/profiles/clients/_find?criteria=$x"
-# Write-Host $ok.Content
+
 
 # $file = Join-Path $target "fdcheckserial.exe"
 # if (Test-Path $file) {
