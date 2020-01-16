@@ -5,10 +5,11 @@ param(
     $target
 )
 
-$logfn=Join-Path -Path D:\projects -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
+Write-Host $PSScriptRoot
+
+$logfn=Join-Path -Path $PSScriptRoot -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
 Start-Transcript -Path $logfn -Append
 
-Write-Host $PSScriptRoot
 
 $x=[System.Version]::new("5.1")
 Write-Host "Check powershell version $($psversiontable.psversion)"
@@ -197,7 +198,10 @@ if (-not (Test-Path $file)) {
 }
 
 if( Test-Path $file){
-    Expand-Archive -Path $file -DestinationPath $target
+    $x = Join-Path -Path $env:TEMP -ChildPath "cmctemp"
+    Remove-Item -Path $x -Recurse -Force
+    Expand-Archive -Path $file -DestinationPath $x
+    Copy-Item -Force -Recurse -Path (Join-Path -path $x -ChildPath "*") -Destination $target
 }
 
 # try {
