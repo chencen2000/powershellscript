@@ -1,2 +1,2 @@
-Start-Process C:\Windows\System32\notepad.exe
+Start-Process -FilePath D:\BZVisualInspect\Bin\GIVisualInspectD.exe -WorkingDirectory D:\BZVisualInspect\Bin
 exit 0

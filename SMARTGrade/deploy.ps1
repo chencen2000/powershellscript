@@ -27,12 +27,14 @@ $x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDDownloadTools","Sy
 $syncstatus = Get-Content $x | ConvertFrom-Json
 $clientStatus = Get-Content (Join-Path -Path $env:APSTHOME -ChildPath "clientstatus.json") | ConvertFrom-Json
 
-if($null -eq $syncstatus.deviceprofile){
+if($null -eq $syncstatus.deviceprofile ){
     Write-Host "Device profile element not found in $x"
+    Start-CMCDeploy
     exit 1
 }
 if($syncstatus.deviceprofile.filelist.Count -eq 0){
     Write-Host "Device profile element has no more items in $x"
+    Start-CMCDeploy
     exit 1
 }
 
@@ -164,6 +166,10 @@ function Restore-DeviceProfile ($dppackage){
             $idx=Add-DeviceModel $i1 $info["information"]
             Add-DeviceColor $maker.index $idx $info["information"]
         }
+        # copy the content
+        $src = [System.IO.Path]::Combine($temp, "resource","*")
+        $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
+        Copy-Item -Recurse -Force -Path $src -Destination $x
     }
     return $readableid
 }
@@ -178,6 +184,13 @@ function Find-SectionByReadableId ($readableid){
     return $ret
 }
 
+function Start-CMCDeploy(){
+    $x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDAcorn.exe")
+    Copy-Item -Path (Join-Path -Path $env:APSTHOME -ChildPath "FDAcorn.exe") -Destination $x -Force
+    if(Test-Path $x){
+        Start-Process -FilePath $x -ArgumentList "UpdateEnv" -Wait -NoNewWindow     
+    }
+}
 Write-Host "Script root = $PSScriptRoot"
 $downloadTemp=[System.IO.Path]::Combine($env:ProgramData, "FutureDial", "FDDownloadTools", "DownloadTemp")
 $dpfolder=Join-Path $downloadTemp -ChildPath "deviceprofile"
@@ -230,9 +243,10 @@ $x = convertto-json $syncstatus -Depth 8
 [System.IO.File]::WriteAllText(([System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDDownloadTools","SyncStatus.json")), $x)
 
 # start deploy
-$x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDAcorn.exe")
-Copy-Item -Path (Join-Path -Path $env:APSTHOME -ChildPath "FDAcorn.exe") -Destination $x -Force
-if(Test-Path $x){
-    Start-Process -FilePath $x -ArgumentList "UpdateEnv" -Wait -NoNewWindow -WindowStyle Hidden
-}
+Start-CMCDeploy
+# $x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDAcorn.exe")
+# Copy-Item -Path (Join-Path -Path $env:APSTHOME -ChildPath "FDAcorn.exe") -Destination $x -Force
+# if(Test-Path $x){
+#     Start-Process -FilePath $x -ArgumentList "UpdateEnv" -Wait -NoNewWindow 
+# }
 Stop-Transcript
