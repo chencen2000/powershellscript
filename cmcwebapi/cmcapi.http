@@ -20,3 +20,17 @@ POST http://cmcqa.futuredial.com/ws/update/
 Content-Type: application/json
 
 < ./empty_request.json
+
+
+### cmc get wsid
+POST http://cmcqa.futuredial.com/api/workstationcheckin/
+Content-Type: application/json
+
+{"client":{"macaddr":"08f5d811-91ca-4f1c-b1f3-5cd103b9400b"}}
+
+
+### cmc check in
+POST http://cmcqa.futuredial.com/ws/update/
+Content-Type: application/json
+
+< ./checkin.json
