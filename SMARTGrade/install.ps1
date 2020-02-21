@@ -247,8 +247,20 @@ if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
         $q.($_.name) = $ok.results[0].($_.name); 
     } 
     Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
-}
 
+    # send pc info to cmc to register the pcname and mcaddress
+    # we use Win32_ComputerSystemProduct.UUID as mcaddress
+    $q.Add("company", $c["companyid"])
+    $q.Add("site", $c["siteid"])
+    $q.Add("pcname", [System.Environment]::MachineName)
+    $q.Add("macaddr", (Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
+    $req = @{client=$c; sync=@{status=@{}}; protocol="3.0"}
+    $x = $req | ConvertTo-Json
+    # Write-Output $s
+    Invoke-RestMethod -UseBasicParsing -Method Post -uri "http://cmcqa.futuredial.com/ws/update/" -Body $x -ContentType "application/json"
+    # $ = $res | ConvertTo-Json 
+    # Write-Output $s
+}
 
 # $file = Join-Path $target "fdcheckserial.exe"
 # if (Test-Path $file) {
@@ -277,9 +289,10 @@ $Shortcut.Save()
 $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonApplicationData)) "FutureDial"
 mkdir $x
 [System.Environment]::SetEnvironmentVariable("APSTHOME", $target, [System.EnvironmentVariableTarget]::Machine)
-# Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
-# Write-Host "Restart the computer to start the download."
-# cmd /c pause
-# Restart-Computer
+Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
 Stop-Transcript
+
+Write-Host "Restart the computer to start the download."
+cmd /c pause
+Restart-Computer
 exit 0

@@ -9,6 +9,7 @@ GET http://cmcqa.futuredial.com/api/listpkgs/
     ?type=deviceprofile    
     &solutionid=45
 
+
 ### list firmware packages 
 GET http://cmcqa.futuredial.com/api/listpkgs/
     ?type=firmware    
