@@ -1,4 +1,4 @@
-$logfn=Join-Path -Path D:\projects -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
+$logfn=Join-Path -Path $PSScriptRoot -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
 Start-Transcript -Path $logfn -Append
 
 $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
