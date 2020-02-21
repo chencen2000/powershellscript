@@ -251,11 +251,11 @@ if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
 
     # send pc info to cmc to register the pcname and mcaddress
     # we use Win32_ComputerSystemProduct.UUID as mcaddress
-    $q.Add("company", $c["companyid"])
-    $q.Add("site", $c["siteid"])
+    $q.Add("company", $q["companyid"].ToString())
+    $q.Add("site", $q["siteid"].ToString())
     $q.Add("pcname", [System.Environment]::MachineName)
     $q.Add("macaddr", (Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
-    $req = @{client=$c; sync=@{status=@{}}; protocol="3.0"}
+    $req = @{client=$q; sync=@{status=@{}}; protocol="3.0"}
     $x = $req | ConvertTo-Json
     # Write-Output $s
     Invoke-RestMethod -UseBasicParsing -Method Post -uri "http://cmcqa.futuredial.com/ws/update/" -Body $x -ContentType "application/json"
@@ -268,7 +268,7 @@ if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
         $q = Get-Content $x | ConvertFrom-Json
         Add-Member -InputObject $q.client -NotePropertyName macaddr -NotePropertyValue ((Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
         # Write-Host ($x | ConvertTo-Json -Depth 4)        
-        Out-File -FilePath $x -InputObject ($q | ConvertTo-Json -Depth 4)    
+        Out-File -FilePath $x -InputObject ($q | ConvertTo-Json -Depth 4) -Encoding default   
     }
 }
 
