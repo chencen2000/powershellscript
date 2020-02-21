@@ -235,6 +235,7 @@ if($null -eq $x){
 #     productid=55
 # }
 # Out-IniFile -InputObject @{config=$q} -FilePath (Join-Path $target "config.ini") -Encoding ASCII
+
 Remove-Item -Path $file -Force
 $x = @{_id = $serialno } 
 $x = $x | ConvertTo-Json -Compress
@@ -260,6 +261,15 @@ if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
     Invoke-RestMethod -UseBasicParsing -Method Post -uri "http://cmcqa.futuredial.com/ws/update/" -Body $x -ContentType "application/json"
     # $ = $res | ConvertTo-Json 
     # Write-Output $s
+
+    # modify clientsync.json add the mcaddress
+    $x=Join-Path -Path $target -ChildPath "clientstatus.json"
+    if(Test-Path $x){
+        $q = Get-Content $x | ConvertFrom-Json
+        Add-Member -InputObject $q.client -NotePropertyName macaddr -NotePropertyValue ((Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
+        # Write-Host ($x | ConvertTo-Json -Depth 4)        
+        Out-File -FilePath $x -InputObject ($q | ConvertTo-Json -Depth 4)    
+    }
 }
 
 # $file = Join-Path $target "fdcheckserial.exe"
