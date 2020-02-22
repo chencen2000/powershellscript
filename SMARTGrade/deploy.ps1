@@ -164,7 +164,7 @@ function Restore-DeviceProfile ($dppackage){
             # not foun need create new one
             $i1=Add-DeviceMaker $info["information"]
             $idx=Add-DeviceModel $i1 $info["information"]
-            Add-DeviceColor $maker.index $idx $info["information"]
+            Add-DeviceColor $i1 $idx $info["information"]
         }
         # copy the content
         $src = [System.IO.Path]::Combine($temp, "resource","*")

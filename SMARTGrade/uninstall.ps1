@@ -1,6 +1,12 @@
 $logfn=Join-Path -Path $PSScriptRoot -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
 Start-Transcript -Path $logfn -Append
 
+### kill download process first
+$x = Get-Process -Name "HydraDownloaderUI","HydraDownloader","hydraDeploy"
+if($null -ne $x){
+    Stop-Process -InputObject $x
+}
+
 $x = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::CommonDesktopDirectory)) "SMARTGrade.lnk"
 if(Test-Path $x){
     Remove-Item -Path $x
