@@ -1,3 +1,41 @@
+<#PSScriptInfo
+
+.VERSION 2020.2.22.0
+
+.GUID 3bb10ee7-38c1-41b9-88ea-16899164fc19
+
+.AUTHOR cchen@futuredial.com
+
+.COMPANYNAME Futuredial
+
+.COPYRIGHT
+
+.TAGS
+
+.LICENSEURI
+
+.PROJECTURI
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+
+.PRIVATEDATA
+
+#>
+
+<#
+
+.DESCRIPTION
+ CMC delpoyment script file.
+
+#>
 if( -not (Test-Path $env:APSTHOME)){
     Write-Host "No APSTHOME set."
     exit 1
@@ -11,6 +49,17 @@ $x=Import-Module ([System.IO.Path]::combine($env:APSTHOME, "Modules", "PsIni")) 
 if($null -eq $x){
     Write-Host "Fail to load INI module."
     exit 1
+}
+
+function Start-CMCDeploy(){
+    $x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDAcorn.exe")
+    Copy-Item -Path (Join-Path -Path $env:APSTHOME -ChildPath "FDAcorn.exe") -Destination $x -Force
+    if(Test-Path $x){
+        $x = Start-Process -FilePath $x -ArgumentList "-UpdateEnv" -PassThru -NoNewWindow     
+        if($null -ne $x){
+            $x.WaitForExit()
+        }
+    }
 }
 
 <###
@@ -32,28 +81,39 @@ if($null -eq $syncstatus.deviceprofile ){
     Start-CMCDeploy
     exit 1
 }
-if($syncstatus.deviceprofile.filelist.Count -eq 0){
+if(($syncstatus.deviceprofile.filelist.Count -eq 0) -and ($syncstatus.deviceprofile.deletelist.Count -eq 0)){
     Write-Host "Device profile element has no more items in $x"
     Start-CMCDeploy
     exit 1
 }
 
 
-$x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
-New-Item -Path $x -ItemType Directory 
-$missionManagerIni=Join-Path -Path $x -ChildPath "MissionManager.ini"
+$UsedPhone=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
+New-Item -Path $UsedPhone -ItemType Directory 
+# $missionManagerIni=Join-Path -Path $x -ChildPath "MissionManager.ini"
+# $dp_local=[ordered]@{}
+# if(Test-Path $missionManagerIni){
+#     $dp_local=Get-IniContent $missionManagerIni
+# }
+# Write-Host ($dp_local | Out-String)
+# if( $dp_local.Contains("productNum")){
+#     Write-Host ($dp_local["productNum"] | Out-String)
+# }
+# else{
+#     $dp_local["ProductNum"] = [ordered]@{"Num"=0}
+# }
 $dp_local=[ordered]@{}
-if(Test-Path $missionManagerIni){
-    $dp_local=Get-IniContent $missionManagerIni
-}
-Write-Host ($dp_local | Out-String)
-if( $dp_local.Contains("productNum")){
-    Write-Host ($dp_local["productNum"] | Out-String)
-}
-else{
-    $dp_local["ProductNum"] = [ordered]@{"Num"=0}
-}
+$dp_local["ProductNum"] = [ordered]@{"Num"=0}
 
+function Get-LocalDeviceProfile($path) {
+    $ret = @()
+    $info_files = @(Get-ChildItem -Path $path -Filter "info.ini" -Recurse)
+    foreach($i in $info_files){
+        $info = Get-IniContent $i.FullName
+        $ret += $info.information
+    }
+    return $ret
+}
 function Find-DeviceMaker($maker){
     $found = $false
     $idx=0
@@ -184,18 +244,111 @@ function Find-SectionByReadableId ($readableid){
     return $ret
 }
 
-function Start-CMCDeploy(){
-    $x=[System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDAcorn.exe")
-    Copy-Item -Path (Join-Path -Path $env:APSTHOME -ChildPath "FDAcorn.exe") -Destination $x -Force
-    if(Test-Path $x){
-        Start-Process -FilePath $x -ArgumentList "UpdateEnv" -Wait -NoNewWindow     
-    }
+function Remove-LocalDeviceProfile ($dpinfo) {
+    $x="{0}-{1}-{2}" -f  $dpinfo["maker"],$dpinfo["model"],$dpinfo["color"]
+    Remove-Item -Path (Join-Path -Path $UsedPhone -ChildPath $x) -Recurse -Force
 }
+function Copy-LocalDeviceProfile ($dppackage){
+    $ret=$null
+    if(Test-Path $dppackage){
+        $temp = Join-Path -Path $env:TEMP -ChildPath "dptemp"
+        Remove-Item -Recurse -Force $temp
+        Expand-Archive -Path $dppackage -DestinationPath $temp
+        $info = Get-IniContent (Join-Path -Path $temp -ChildPath "info.ini")
+        $ret=$info["information"]
+        $src = [System.IO.Path]::Combine($temp, "resource","*")
+        # $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
+        Copy-Item -Recurse -Force -Path $src -Destination $UsedPhone
+        # $x="$($ret["maker"])-$($ret["model"])-$($ret["color"])"
+        $x="{0}-{1}-{2}" -f  $ret["maker"],$ret["model"],$ret["color"]
+        Copy-Item -path (Join-Path -Path $temp -ChildPath "info.ini") -Destination (Join-Path -Path $UsedPhone -ChildPath $x)
+    }
+    return $ret
+}
+
+function Save-DeviceProfileIni ($dpdata) {
+    ## generate ini 
+    foreach($i in $dpdata){
+        # $maker=$i["maker"]
+        # $model=$i["model"]
+        # $color=$i["color"]
+        $maker=Find-DeviceMaker $i["maker"]
+        if($maker.found){
+            # found model
+            $model = Find-DeviceModel $maker.index $i["model"]
+            if($model.found){
+                # found model
+                $color = Find-DeviceColor $maker.index $model.index $i["color"]
+                if($color.found){
+                    # found color
+                    # just copy the content to folder
+                }
+                else{
+                    # not found need create new color
+                    Add-DeviceColor $maker.index $model.index $i
+                }
+            }
+            else{
+                # not found need create new model
+                $idx=Add-DeviceModel $maker.index $i
+                Add-DeviceColor $maker.index $idx $i
+            }
+        }
+        else{
+            # not foun need create new one
+            $i1=Add-DeviceMaker $i
+            $idx=Add-DeviceModel $i1 $i
+            Add-DeviceColor $i1 $idx $i
+        }
+    }
+    $fn = Join-Path -Path $UsedPhone -ChildPath "MissionManager.ini"
+    Remove-Item -Path $fn -Force
+    Out-IniFile -FilePath $fn -InputObject $dp_local -Encoding ASCII    
+}
+
 Write-Host "Script root = $PSScriptRoot"
 $downloadTemp=[System.IO.Path]::Combine($env:ProgramData, "FutureDial", "FDDownloadTools", "DownloadTemp")
 $dpfolder=Join-Path $downloadTemp -ChildPath "deviceprofile"
 Write-Host "Device profile download path = $dpfolder"
 # $dps=[ArrayList]@()
+
+$dp_local_info=New-Object System.Collections.ArrayList($null)
+$x = Get-LocalDeviceProfile $UsedPhone
+if($null -ne $x){
+    $dp_local_info.AddRange($x)
+}
+
+if($syncstatus.deviceprofile.deletelist.Count -gt 0){
+    # the device profile removed from server, need to be delete from local.
+    foreach($i in $syncstatus.deviceprofile.deletelist){
+        $x=$dp_local_info | Where-Object {$_.readableid -eq $i}
+        if($null -ne $x) {
+            ## remove the folder
+            Remove-LocalDeviceProfile $x
+            $dp_local_info.Remove($x)
+        }
+        # remove it from clientstatus
+        $x = $clientStatus.sync.status.deviceprofile.filelist | Where-Object {$_.readableid -eq $i}
+        if($null -ne $x){
+            $clientStatus.sync.status.deviceprofile.filelist = $clientStatus.sync.status.deviceprofile.filelist -ne $x
+        }
+    }
+}
+
+if($syncstatus.deviceprofile.filelist.Count -gt 0){
+    # the device profile added from server, need to be add to local.
+    foreach($i in $syncstatus.deviceprofile.filelist){
+        $fn = Split-Path $i.url -Leaf
+        $fn=[System.IO.Path]::Combine([System.String[]]@($env:ProgramData,"FutureDial","FDDownloadTools","DownloadTemp","deviceprofile", $fn))
+        $x=Copy-LocalDeviceProfile $fn
+        if($null -ne $x){
+            $dp_local_info.Add($x)
+            $i.psobject.Properties.Remove("url")
+            $clientStatus.sync.status.deviceprofile.filelist += $i
+        }
+        Remove-Item -Path $fn -Force    
+    }
+}
 
 <#
 if( Test-Path $dpfolder){
@@ -226,6 +379,7 @@ if( Test-Path $dpfolder){
     }    
 }
 #>
+<#
 foreach($dp in $syncstatus.deviceprofile.filelist){
     $fn = Split-Path $dp.url -Leaf
     $fn=[System.IO.Path]::Combine([System.String[]]@($env:ProgramData,"FutureDial","FDDownloadTools","DownloadTemp","deviceprofile", $fn))
@@ -234,10 +388,13 @@ foreach($dp in $syncstatus.deviceprofile.filelist){
     $clientStatus.sync.status.deviceprofile.filelist += $dp
     Remove-Item -Path $fn -Force    
 }
-Remove-Item -Path $missionManagerIni -Force
-Out-IniFile -FilePath $missionManagerIni -InputObject $dp_local -Encoding ASCII
+#>
+# Remove-Item -Path $missionManagerIni -Force
+# Out-IniFile -FilePath $missionManagerIni -InputObject $dp_local -Encoding ASCII
+Save-DeviceProfileIni $dp_local_info
 $x = convertto-json $clientStatus -Depth 8
 [System.IO.File]::WriteAllText((Join-Path -Path $env:APSTHOME -ChildPath "ClientStatus.json"), $x)
+$syncstatus.deviceprofile.deletelist=@()
 $syncstatus.deviceprofile.filelist=@()
 $x = convertto-json $syncstatus -Depth 8
 [System.IO.File]::WriteAllText(([System.IO.Path]::Combine($env:ProgramData,"FutureDial","FDDownloadTools","SyncStatus.json")), $x)

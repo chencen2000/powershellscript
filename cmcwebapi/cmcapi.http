@@ -27,7 +27,7 @@ Content-Type: application/json
 POST http://cmcqa.futuredial.com/api/workstationcheckin/
 Content-Type: application/json
 
-{"client":{"macaddr":"08f5d811-91ca-4f1c-b1f3-5cd103b9400b"}}
+{"client":{"macaddr":"E7801EFE-110E-4FC6-99A0-A91F0B13DBD3"}}
 
 
 ### cmc check in
