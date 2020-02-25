@@ -121,4 +121,3 @@ foreach($i in $local){
     }
 }
 
-Out-IniFile -FilePath C:\projects\temp\UsedPhone\test.ini -InputObject $dp_local -Encoding ASCII

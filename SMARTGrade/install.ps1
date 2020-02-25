@@ -7,7 +7,11 @@ param(
 
 Write-Host $PSScriptRoot
 
-$logfn=Join-Path -Path $PSScriptRoot -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
+$path = [System.Environment]::CurrentDirectory
+if( -not [System.String]::IsNullOrEmpty($PSScriptRoot)) {
+    $path=$PSScriptRoot
+}
+$logfn=Join-Path -Path $path -ChildPath ((Get-Date).ToString("yyyyMMdd")+".log")
 Start-Transcript -Path $logfn -Append
 
 

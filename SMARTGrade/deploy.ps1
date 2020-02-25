@@ -87,9 +87,11 @@ if(($syncstatus.deviceprofile.filelist.Count -eq 0) -and ($syncstatus.deviceprof
     exit 1
 }
 
-
-$UsedPhone=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
-New-Item -Path $UsedPhone -ItemType Directory 
+$MissionFolder=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission")
+# $MissionFolder = C:\projects\temp\Mission
+New-Item -Path $MissionFolder -ItemType Directory 
+$UsedPhone=Join-Path -path $MissionFolder -ChildPath "UsedPhone"
+#New-Item -Path $UsedPhone -ItemType Directory 
 # $missionManagerIni=Join-Path -Path $x -ChildPath "MissionManager.ini"
 # $dp_local=[ordered]@{}
 # if(Test-Path $missionManagerIni){
@@ -245,28 +247,39 @@ function Find-SectionByReadableId ($readableid){
 }
 
 function Remove-LocalDeviceProfile ($dpinfo) {
+    $folder = $dpinfo["folder"]
+    if([System.String]::IsNullOrEmpty($folder)) {
+        $folder = "UsedPhone"
+    }
     $x="{0}-{1}-{2}" -f  $dpinfo["maker"],$dpinfo["model"],$dpinfo["color"]
-    Remove-Item -Path (Join-Path -Path $UsedPhone -ChildPath $x) -Recurse -Force
+    $t=[System.IO.Path]::Combine($MissionFolder, $folder, $x)
+    Remove-Item -Path $t -Recurse -Force
 }
 function Copy-LocalDeviceProfile ($dppackage){
     $ret=$null
     if(Test-Path $dppackage){
         $temp = Join-Path -Path $env:TEMP -ChildPath "dptemp"
         Remove-Item -Recurse -Force $temp
-        Expand-Archive -Path $dppackage -DestinationPath $temp
+        Expand-Archive -LiteralPath $dppackage -DestinationPath $temp -Force
         $info = Get-IniContent (Join-Path -Path $temp -ChildPath "info.ini")
         $ret=$info["information"]
         $src = [System.IO.Path]::Combine($temp, "resource","*")
+        $folder = $ret["folder"]
+        if([System.String]::IsNullOrEmpty($folder)) {
+            $folder = "UsedPhone"
+        }            
         # $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
-        Copy-Item -Recurse -Force -Path $src -Destination $UsedPhone
+        $target = Join-Path -Path $MissionFolder -ChildPath $folder
+        New-Item -Path $target -ItemType Directory 
+        Copy-Item -Recurse -Force -Path $src -Destination $target
         # $x="$($ret["maker"])-$($ret["model"])-$($ret["color"])"
         $x="{0}-{1}-{2}" -f  $ret["maker"],$ret["model"],$ret["color"]
-        Copy-Item -path (Join-Path -Path $temp -ChildPath "info.ini") -Destination (Join-Path -Path $UsedPhone -ChildPath $x)
+        Copy-Item -path (Join-Path -Path $temp -ChildPath "info.ini") -Destination (Join-Path -Path $target -ChildPath $x)
     }
     return $ret
 }
 
-function Save-DeviceProfileIni ($dpdata) {
+function Save-DeviceProfileIni ($dpdata, $folder) {
     ## generate ini 
     foreach($i in $dpdata){
         # $maker=$i["maker"]
@@ -301,7 +314,8 @@ function Save-DeviceProfileIni ($dpdata) {
             Add-DeviceColor $i1 $idx $i
         }
     }
-    $fn = Join-Path -Path $UsedPhone -ChildPath "MissionManager.ini"
+    # $fn = Join-Path -Path $UsedPhone -ChildPath "MissionManager.ini"
+    $fn = [System.IO.Path]::Combine($MissionFolder, $folder, "MissionManager.ini")
     Remove-Item -Path $fn -Force
     Out-IniFile -FilePath $fn -InputObject $dp_local -Encoding ASCII    
 }
@@ -313,7 +327,7 @@ Write-Host "Device profile download path = $dpfolder"
 # $dps=[ArrayList]@()
 
 $dp_local_info=New-Object System.Collections.ArrayList($null)
-$x = Get-LocalDeviceProfile $UsedPhone
+$x = Get-LocalDeviceProfile $MissionFolder
 if($null -ne $x){
     $dp_local_info.AddRange($x)
 }
@@ -321,16 +335,20 @@ if($null -ne $x){
 if($syncstatus.deviceprofile.deletelist.Count -gt 0){
     # the device profile removed from server, need to be delete from local.
     foreach($i in $syncstatus.deviceprofile.deletelist){
-        $x=$dp_local_info | Where-Object {$_.readableid -eq $i}
+        $x=@($dp_local_info | Where-Object {$_.readableid -eq $i})
         if($null -ne $x) {
             ## remove the folder
-            Remove-LocalDeviceProfile $x
-            $dp_local_info.Remove($x)
+            foreach($j in $x){
+                Remove-LocalDeviceProfile $j
+                $dp_local_info.Remove($j)
+            }
         }
         # remove it from clientstatus
-        $x = $clientStatus.sync.status.deviceprofile.filelist | Where-Object {$_.readableid -eq $i}
+        $x = @($clientStatus.sync.status.deviceprofile.filelist | Where-Object {$_.readableid -eq $i})
         if($null -ne $x){
-            $clientStatus.sync.status.deviceprofile.filelist = $clientStatus.sync.status.deviceprofile.filelist -ne $x
+            foreach($j in $x){
+                $clientStatus.sync.status.deviceprofile.filelist = $clientStatus.sync.status.deviceprofile.filelist -ne $j
+            }
         }
     }
 }
@@ -338,12 +356,24 @@ if($syncstatus.deviceprofile.deletelist.Count -gt 0){
 if($syncstatus.deviceprofile.filelist.Count -gt 0){
     # the device profile added from server, need to be add to local.
     foreach($i in $syncstatus.deviceprofile.filelist){
+        # find exists by readableid
+        $rid = $i.readableid
+        $x=@($dp_local_info | Where-Object {$_.readableid -eq $rid})
+        foreach($j in $x){
+            Remove-LocalDeviceProfile $j
+            $dp_local_info.Remove($j)
+        }
+        # copy
         $fn = Split-Path $i.url -Leaf
         $fn=[System.IO.Path]::Combine([System.String[]]@($env:ProgramData,"FutureDial","FDDownloadTools","DownloadTemp","deviceprofile", $fn))
         $x=Copy-LocalDeviceProfile $fn
         if($null -ne $x){
-            $dp_local_info.Add($x)
+            # $dp_local_info.Add($x)
             $i.psobject.Properties.Remove("url")
+            $x = @($clientStatus.sync.status.deviceprofile.filelist | Where-Object {$_.readableid -eq $rid})
+            foreach($j in $x) {
+                $clientStatus.sync.status.deviceprofile.filelist = $clientStatus.sync.status.deviceprofile.filelist -ne $j
+            }
             $clientStatus.sync.status.deviceprofile.filelist += $i
         }
         Remove-Item -Path $fn -Force    
@@ -391,7 +421,22 @@ foreach($dp in $syncstatus.deviceprofile.filelist){
 #>
 # Remove-Item -Path $missionManagerIni -Force
 # Out-IniFile -FilePath $missionManagerIni -InputObject $dp_local -Encoding ASCII
-Save-DeviceProfileIni $dp_local_info
+# Save-DeviceProfileIni $dp_local_info
+## save ini for each folder
+$folders =@( Get-ChildItem -Path $MissionFolder -Directory)
+foreach($f in $folders){
+    $dp_local=[ordered]@{}
+    $dp_local["ProductNum"] = [ordered]@{"Num"=0}
+    $dp_local_info=New-Object System.Collections.ArrayList($null)
+    $x = Get-LocalDeviceProfile $f.FullName
+    if($null -ne $x){
+        Save-DeviceProfileIni $x $f.Name
+    }
+    else{
+        Remove-Item -Path (Join-Path -Path $f.FullName -ChildPath "MissionManager.ini") -Force
+    }
+}
+
 $x = convertto-json $clientStatus -Depth 8
 [System.IO.File]::WriteAllText((Join-Path -Path $env:APSTHOME -ChildPath "ClientStatus.json"), $x)
 $syncstatus.deviceprofile.deletelist=@()
