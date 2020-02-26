@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 2020.2.22.0
+.VERSION 2020.2.25.1
 
 .GUID 3bb10ee7-38c1-41b9-88ea-16899164fc19
 
@@ -263,7 +263,8 @@ function Copy-LocalDeviceProfile ($dppackage){
         Expand-Archive -LiteralPath $dppackage -DestinationPath $temp -Force
         $info = Get-IniContent (Join-Path -Path $temp -ChildPath "info.ini")
         $ret=$info["information"]
-        $src = [System.IO.Path]::Combine($temp, "resource","*")
+        $key="{0}-{1}-{2}" -f  $ret["maker"],$ret["model"],$ret["color"]
+        $src = [System.IO.Path]::Combine($temp, "resource",$key)
         $folder = $ret["folder"]
         if([System.String]::IsNullOrEmpty($folder)) {
             $folder = "UsedPhone"
@@ -273,8 +274,13 @@ function Copy-LocalDeviceProfile ($dppackage){
         New-Item -Path $target -ItemType Directory 
         Copy-Item -Recurse -Force -Path $src -Destination $target
         # $x="$($ret["maker"])-$($ret["model"])-$($ret["color"])"
-        $x="{0}-{1}-{2}" -f  $ret["maker"],$ret["model"],$ret["color"]
-        Copy-Item -path (Join-Path -Path $temp -ChildPath "info.ini") -Destination (Join-Path -Path $target -ChildPath $x)
+        # copy info.ini
+        Copy-Item -path (Join-Path -Path $temp -ChildPath "info.ini") -Destination (Join-Path -Path $target -ChildPath $key)
+        # copy schema file, from resource folder to $env:APSTHOME,"UserData", "Mission", "UsedPhone", Schema\{maker}\{model}\Light-{maker}-{model}-{color}.ini
+        $src = [System.IO.Path]::Combine($temp, "resource",("Light-{0}.ini" -f $key))
+        $target = [System.IO.Path]::Combine([string[]]@($MissionFolder, $folder, "Schema", $ret["maker"], $ret["model"]))
+        New-Item -Path $target -ItemType Directory 
+        Copy-Item -Path $src -Destination $target
     }
     return $ret
 }

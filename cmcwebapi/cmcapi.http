@@ -35,3 +35,16 @@ POST http://cmcqa.futuredial.com/ws/update/
 Content-Type: application/json
 
 < ./checkin.json
+
+
+### list packages 
+GET http://cmcqa.futuredial.com/api/listpkgs/
+    ?solutionid=45
+    &type=prl
+
+###    
+GET http://cmcqa.futuredial.com/api/pkginfo/
+    ?solutionid=45
+    &type=deviceprofile
+    &pkgid=samsung-galaxy-black-1.0
+
