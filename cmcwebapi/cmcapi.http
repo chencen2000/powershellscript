@@ -4,6 +4,12 @@ GET https://ps.futuredial.com/profiles/clients/_find
 Content-Type: application/json
 
 
+### ps.futuredial.com api
+GET https://ps.futuredial.com/profiles/clients/_find
+  ?criteria={"_id": "75c10cc6-92c3-49f6-be55-fd0f5891a4e0"}
+Content-Type: application/json
+
+
 ### list packages 
 GET http://cmcqa.futuredial.com/api/listpkgs/
     ?type=deviceprofile    

@@ -267,13 +267,19 @@ if(($ok.ok -eq 1) -and ($ok.results.Length -eq 1) ){
     # Write-Output $s
 
     # modify clientsync.json add the mcaddress
-    $x=Join-Path -Path $target -ChildPath "clientstatus.json"
-    if(Test-Path $x){
-        $q = Get-Content $x | ConvertFrom-Json
-        Add-Member -InputObject $q.client -NotePropertyName macaddr -NotePropertyValue ((Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
-        # Write-Host ($x | ConvertTo-Json -Depth 4)        
-        Out-File -FilePath $x -InputObject ($q | ConvertTo-Json -Depth 4) -Encoding default   
-    }
+    # $x=Join-Path -Path $target -ChildPath "clientstatus.json"
+    # if(Test-Path $x){
+    #     $q = Get-Content $x | ConvertFrom-Json
+    #     Add-Member -InputObject $q.client -NotePropertyName macaddr -NotePropertyValue ((Get-CimInstance -class Win32_ComputerSystemProduct).uuid)
+    #     # Write-Host ($x | ConvertTo-Json -Depth 4)        
+    #     Out-File -FilePath $x -InputObject ($q | ConvertTo-Json -Depth 4) -Encoding default   
+    # }
+    $x = @{client=@{company=1;solutionid=1;productid=1;macaddr=""}; sync=@{status=@{framework=@{version="";filelist=@()};phonedll=@{filelist=@();deletelist=@()};driver=@{filelist=@();deletelist=@()};prl=@{filelist=@();deletelist=@()};phonetips=@{filelist=@();deletelist=@()};firmware=@{filelist=@();deletelist=@()};deviceprofile=@{filelist=@();deletelist=@()}}}; protocol="2.0"}
+    $x.client.company=$q["companyid"] -as [int]
+    $x.client.solutionid=$q["solutionid"] -as [int]
+    $x.client.productid=$q["productid"] -as [int]
+    $x.client.macaddr=(Get-CimInstance -class Win32_ComputerSystemProduct).uuid
+    Out-File -FilePath (Join-Path -Path $target -ChildPath "clientstatus.json") -InputObject ($x | ConvertTo-Json -Depth 4) -Encoding default -Force
 }
 
 # $file = Join-Path $target "fdcheckserial.exe"
