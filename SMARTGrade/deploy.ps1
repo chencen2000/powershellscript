@@ -87,7 +87,7 @@ if(($syncstatus.deviceprofile.filelist.Count -eq 0) -and ($syncstatus.deviceprof
     exit 1
 }
 
-$MissionFolder=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission")
+$MissionFolder=[System.IO.Path]::Combine($env:APSTHOME,"BZVisualInspect","UserData", "Mission")
 # $MissionFolder = C:\projects\temp\Mission
 New-Item -Path $MissionFolder -ItemType Directory 
 $UsedPhone=Join-Path -path $MissionFolder -ChildPath "UsedPhone"
