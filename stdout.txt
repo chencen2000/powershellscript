@@ -1,0 +1,1 @@
+Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] cmp=com.android.settings/.Settings$PrivacySettingsActivity launchParam=MultiScreenLaunchParams { mDisplayId=0 mFlags=0 } }
