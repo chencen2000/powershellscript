@@ -24,6 +24,11 @@ Authorization: Basic admin fd123!
 If-Match: 5e01ca98b64757425d5ea8c0
 
 
+### dc file bucket
+GET http://dc.futuredial.com/cmc/testbucket.files/ HTTP/1.1
+Authorization: Basic cmc cmc1234!
+
+
 ### create a new document in collection
 POST http://dc.futuredial.com/cmc/CCTest HTTP/1.1
 Authorization: Basic cmc cmc1234!
@@ -631,3 +636,4 @@ Content-Type: application/json
   },
   "protocol": "2.0"
 }
+

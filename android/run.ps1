@@ -1,5 +1,5 @@
-$wd="C:\Tools\adb"
-$adb="C:\Tools\adb\adb.exe"
+$wd="C:\projects\temp"
+$adb="C:\Tools\Android\platform-tools\adb.exe"
 
 function Get-UIXml() {
     $p = Start-Process -FilePath $adb -WorkingDirectory $wd -ArgumentList "shell uiautomator dump /data/local/tmp/dump.xml" -RedirectStandardOutput (Join-Path -Path $wd -ChildPath "stdout.txt") -PassThru -NoNewWindow
