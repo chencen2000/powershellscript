@@ -1,0 +1,5 @@
+com.android.settings:26
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+title: BACKUP AND RESET
+text: Factory data reset
+

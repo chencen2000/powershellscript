@@ -272,6 +272,11 @@ function Copy-LocalDeviceProfile ($dppackage){
         # $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
         $target = Join-Path -Path $MissionFolder -ChildPath $folder
         New-Item -Path $target -ItemType Directory 
+        # copy Light-Default.ini, Route.ini and Schema.ini from D:\LocalConfig\
+        $x = Join-Path -Path $target -ChildPath "schema"
+        Copy-Item -Path D:\LocalConfig\Light-Default.ini -Destination $target 
+        Copy-Item -Path D:\LocalConfig\Route.ini -Destination $target 
+        Copy-Item -Path D:\LocalConfig\Schema.ini -Destination $target 
         Copy-Item -Recurse -Force -Path $src -Destination $target
         # $x="$($ret["maker"])-$($ret["model"])-$($ret["color"])"
         # copy info.ini
