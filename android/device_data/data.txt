@@ -1,7 +1,86 @@
+Factory data reset
+
+Reset phone
+
+Erase everything
+
+
 android 4.2.2
+ro.build.version.sdk:17
 com.android.settings:17
 android.settings.BACKUP_AND_RESET_SETTINGS
 com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset phone
+# Erase everything
+
+
+android 4.4.4
+ro.build.version.sdk:19
+com.android.settings:19
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset phone
+# Erase everything
+
+
+android 5.1.1
+ro.build.version.sdk:22
+com.android.settings:22
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset device (com.android.settings:id/initiate_master_clear)
+# Delete all (com.android.settings:id/execute_master_clear)
+
+android 6.0.1
+ro.build.version.sdk:23
+com.android.settings:23
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset device (com.android.settings:id/initiate_master_clear)
+# Delete all (com.android.settings:id/execute_master_clear)
+
+
+android 7.0
+ro.build.version.sdk:24
+com.android.settings:24
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset device (com.android.settings:id/initiate_master_clear)
+# RESET TABLET (com.android.settings:id/initiate_master_clear)
+# RESET PHONE (com.android.settings:id/initiate_master_clear)
+# Delete all (com.android.settings:id/execute_master_clear)
+# DELETE ALL (com.android.settings:id/execute_master_clear)
+
+
+android 8.0.0
+ro.build.version.sdk:26
+com.android.settings:26
+com.android.settings/.Settings$PrivacyResetSettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacyResetSettingsActivity
+# Factory data reset
+# RESET (com.android.settings:id/initiate_master_clear)
+# DELETE ALL (com.android.settings:id/execute_master_clear)
+
+
+android:8.1.0
+ro.build.version.sdk:27
+com.android.settings:70139010
+com.android.settings/.Settings$PrivacyResetSettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$BackupDashboardActivity
+# Factory data reset
+# RESET (com.android.settings:id/initiate_master_clear)
+# DELETE ALL (com.android.settings:id/execute_master_clear)
+
 
 com.android.settings:26
 shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
