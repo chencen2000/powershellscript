@@ -272,11 +272,6 @@ function Copy-LocalDeviceProfile ($dppackage){
         # $x=[System.IO.Path]::Combine($env:APSTHOME,"UserData", "Mission", "UsedPhone")
         $target = Join-Path -Path $MissionFolder -ChildPath $folder
         New-Item -Path $target -ItemType Directory 
-        # copy Light-Default.ini, Route.ini and Schema.ini from D:\LocalConfig\
-        $x = Join-Path -Path $target -ChildPath "schema"
-        Copy-Item -Path D:\LocalConfig\Light-Default.ini -Destination $target 
-        Copy-Item -Path D:\LocalConfig\Route.ini -Destination $target 
-        Copy-Item -Path D:\LocalConfig\Schema.ini -Destination $target 
         Copy-Item -Recurse -Force -Path $src -Destination $target
         # $x="$($ret["maker"])-$($ret["model"])-$($ret["color"])"
         # copy info.ini
@@ -290,6 +285,14 @@ function Copy-LocalDeviceProfile ($dppackage){
     return $ret
 }
 
+function Copy-SchemaFile($folder) {
+    # copy Light-Default.ini, Route.ini and Schema.ini from D:\LocalConfig\ into $folder\schema folder
+    $x = Join-Path -Path $folder -ChildPath "Schema"
+    New-Item -Path $x -ItemType Directory 
+    Copy-Item -Path D:\LocalConfig\Light-Default.ini -Destination $x -Force
+    Copy-Item -Path D:\LocalConfig\Route.ini -Destination $x -Force
+    Copy-Item -Path D:\LocalConfig\Schema.ini -Destination $x -Force
+}
 function Save-DeviceProfileIni ($dpdata, $folder) {
     ## generate ini 
     foreach($i in $dpdata){
@@ -446,6 +449,8 @@ foreach($f in $folders){
     else{
         Remove-Item -Path (Join-Path -Path $f.FullName -ChildPath "MissionManager.ini") -Force
     }
+    # copy schema files
+    Copy-SchemaFile $f.FullName
 }
 
 $x = convertto-json $clientStatus -Depth 8
