@@ -15,6 +15,15 @@ shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.setting
 # Reset phone
 # Erase everything
 
+android 4.4.2
+ro.build.version.sdk:19
+com.android.settings:19
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset phone (resource-id    : com.android.settings:id/initiate_master_clear)
+# Erase everything (resource-id    : com.android.settings:id/execute_master_clear)
 
 android 4.4.4
 ro.build.version.sdk:19
@@ -25,6 +34,17 @@ shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.setting
 # Factory data reset
 # Reset phone
 # Erase everything
+
+
+android 5.0
+ro.build.version.sdk:21
+com.android.settings:21
+android.settings.BACKUP_AND_RESET_SETTINGS
+com.android.settings/.Settings$PrivacySettingsActivity
+shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
+# Factory data reset
+# Reset device (com.android.settings:id/initiate_master_clear)
+# Delete all (com.android.settings:id/execute_master_clear)
 
 
 android 5.1.1
@@ -80,10 +100,4 @@ shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.setting
 # Factory data reset
 # RESET (com.android.settings:id/initiate_master_clear)
 # DELETE ALL (com.android.settings:id/execute_master_clear)
-
-
-com.android.settings:26
-shell am start -a android.settings.BACKUP_AND_RESET_SETTINGS com.android.settings/.Settings\$PrivacySettingsActivity
-title: BACKUP AND RESET
-text: Factory data reset
 
