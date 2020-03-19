@@ -1,0 +1,18 @@
+### list collections
+GET http://dc.futuredial.com/cmc HTTP/1.1
+Authorization: Basic cmc cmc1234!
+
+### list collections
+GET http://dc.futuredial.com/chrisqa
+Authorization: Basic chrisqa chrisqa1234!
+
+
+### list file bucket
+GET http://dc.futuredial.com/cmc/testbucket.files
+Authorization: Basic cmc cmc1234!
+
+### delete file from file bucket
+DELETE http://dc.futuredial.com/cmc/testbucket.files/5e6fc711b64757425d606de4
+Authorization: Basic admin fd123!
+If-Match: 5e6fc711b64757425d606de6
+
